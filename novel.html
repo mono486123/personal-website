@@ -46,12 +46,17 @@
 
         .page-title { font-size: 1.5rem; font-weight: 700; }
 
+        .novel-list { display: flex; flex-direction: column; gap: 24px; }
+
         .novel-card {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
             border-radius: 8px;
             padding: 32px;
+            transition: border-color 0.2s;
         }
+
+        .novel-card:hover { border-color: var(--accent-beige); }
 
         .card-badge {
             font-size: 0.75rem;
@@ -100,25 +105,46 @@
             <h1 class="page-title">02 / 末日小說</h1>
         </header>
 
-        <article class="novel-card">
-            <span class="card-badge">十萬字連載中</span>
-            <h2 class="novel-title">末日長篇小說《無限殺戮》</h2>
-            
-            <div class="novel-intro">
-                <p>當舊世界的道德秩序崩解，生存不再是一場高尚的道德競賽，而是理智與野性碰撞的極限演繹。</p>
-                <p>作品融合荒誕寫實風格與深刻的人性拉扯，深刻剖析在絕境體制下，個人意志的抉擇、背叛與自我救贖。</p>
-            </div>
-
-            <div class="novel-meta">
-                <div><strong>風格調性：</strong>荒誕寫實 / 人性拉扯 / 黑色幽默</div>
-                <div style="margin-top: 4px;"><strong>登場角色：</strong>森元、夕中、卡西烏斯</div>
-            </div>
-
-            <a href="https://home.gamer.com.tw/" target="_blank" rel="noopener noreferrer" class="btn-primary">
-                前往巴哈姆特小屋閱讀連載 ➔
-            </a>
-        </article>
+        <section id="novel-container" class="novel-list">
+            <p style="color: var(--text-muted);">正在載入小說作品...</p>
+        </section>
     </main>
+
+    <script>
+        fetch('novels.json?v=' + new Date().getTime())
+            .then(res => res.json())
+            .then(data => {
+                const container = document.getElementById('novel-container');
+                container.innerHTML = '';
+
+                data.forEach(item => {
+                    const cardHtml = `
+                        <article class="novel-card">
+                            <span class="card-badge">${item.badge}</span>
+                            <h2 class="novel-title">${item.title}</h2>
+                            <div class="novel-intro">
+                                <p>${item.intro1}</p>
+                                ${item.intro2 ? `<p>${item.intro2}</p>` : ''}
+                            </div>
+                            <div class="novel-meta">
+                                <div><strong>風格調性：</strong>${item.style}</div>
+                                <div style="margin-top: 4px;"><strong>登場角色：</strong>${item.characters}</div>
+                            </div>
+                            ${item.url ? `
+                                <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="btn-primary">
+                                    ${item.btn_text || '前往連載頁面 ➔'}
+                                </a>
+                            ` : ''}
+                        </article>
+                    `;
+                    container.innerHTML += cardHtml;
+                });
+            })
+            .catch(err => {
+                document.getElementById('novel-container').innerHTML = 
+                    '<p style="color:#ff6b6b;">無法載入 novels.json。</p>';
+            });
+    </script>
 
 </body>
 </html>

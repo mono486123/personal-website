@@ -80,7 +80,10 @@
             padding: 20px;
             display: flex;
             gap: 20px;
+            transition: border-color 0.2s;
         }
+
+        .timeline-item:hover { border-color: var(--accent-beige); }
 
         .timeline-item.hidden { display: none; }
 
@@ -104,7 +107,7 @@
             <h1 class="page-title">03 / 生活與節奏</h1>
         </header>
 
-        <div class="filter-bar">
+        <div class="filter-bar" id="filter-bar">
             <button class="tag-btn active" data-filter="all">#全選</button>
             <button class="tag-btn" data-filter="台11線">#台11線</button>
             <button class="tag-btn" data-filter="吉他">#吉他</button>
@@ -112,61 +115,59 @@
             <button class="tag-btn" data-filter="動漫觀點">#動漫觀點</button>
         </div>
 
-        <div class="timeline-list">
-            <article class="timeline-item" data-category="台11線">
-                <div class="timeline-date">2026/08</div>
-                <div>
-                    <h3 class="timeline-title">公路車踩踏巡航：成功鎮海岸風速紀錄</h3>
-                    <p class="timeline-desc">跨上 Giant Contend Aero 1，戴上 Rev Elite MIPS 頭盔。當太平洋的海風順著海岸線吹過，聽著耳機裡的 J-Rock 節奏，踩踏的律動與踏頻交織成最純粹的專注。</p>
-                </div>
-            </article>
-
-            <article class="timeline-item" data-category="吉他">
-                <div class="timeline-date">2026/07</div>
-                <div>
-                    <h3 class="timeline-title">深夜吉他指尖觸感：SPYAIR 旋律隨筆</h3>
-                    <p class="timeline-desc">寫完程式的深夜，拿起吉他彈撥《Samurai Heart》與《Wadachi》的弦音。民謠吉他的溫暖共鳴與電吉他的破音過載，是切換邏輯與感性的最佳介面。</p>
-                </div>
-            </article>
-
-            <article class="timeline-item" data-category="UCC咖啡">
-                <div class="timeline-date">2026/06</div>
-                <div>
-                    <h3 class="timeline-title">黑咖啡與編譯器：凌晨 2 點的萃取濃度</h3>
-                    <p class="timeline-desc">黑咖啡的苦澀與回甘就像 Debug。當 C++ 編譯器零警告通過的那一刻，杯中的咖啡正好降到最適合品嚐的溫度。</p>
-                </div>
-            </article>
-
-            <article class="timeline-item" data-category="動漫觀點">
-                <div class="timeline-date">2026/05</div>
-                <div>
-                    <h3 class="timeline-title">《鏈鋸人》與荒誕現實的對映</h3>
-                    <p class="timeline-desc">藤本樹式的鏡頭語言與荒誕反轉不只是娛樂，更是混亂現實中的精神反射鏡。比起宏大的英雄主義，真實的慾望與掙扎更具感染力。</p>
-                </div>
-            </article>
+        <div id="timeline-container" class="timeline-list">
+            <p style="color: var(--text-muted);">正在載入生活紀錄...</p>
         </div>
     </main>
 
     <script>
-        // 標籤篩選簡單 JavaScript
-        const filterBtns = document.querySelectorAll('.tag-btn');
-        const items = document.querySelectorAll('.timeline-item');
+        fetch('micro_logs.json?v=' + new Date().getTime())
+            .then(res => res.json())
+            .then(data => {
+                const container = document.getElementById('timeline-container');
+                container.innerHTML = '';
 
-        filterBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const category = btn.getAttribute('data-filter');
-                filterBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
+                data.forEach(item => {
+                    const itemHtml = `
+                        <article class="timeline-item" data-category="${item.category}">
+                            <div class="timeline-date">${item.date}</div>
+                            <div>
+                                <h3 class="timeline-title">${item.title}</h3>
+                                <p class="timeline-desc">${item.desc}</p>
+                            </div>
+                        </article>
+                    `;
+                    container.innerHTML += itemHtml;
+                });
 
-                items.forEach(item => {
-                    if (category === 'all' || item.getAttribute('data-category') === category) {
-                        item.classList.remove('hidden');
-                    } else {
-                        item.classList.add('hidden');
-                    }
+                // 註冊篩選按鈕事件
+                initFilter();
+            })
+            .catch(err => {
+                document.getElementById('timeline-container').innerHTML = 
+                    '<p style="color:#ff6b6b;">無法載入 micro_logs.json。</p>';
+            });
+
+        function initFilter() {
+            const filterBtns = document.querySelectorAll('.tag-btn');
+            const items = document.querySelectorAll('.timeline-item');
+
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const category = btn.getAttribute('data-filter');
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+
+                    items.forEach(item => {
+                        if (category === 'all' || item.getAttribute('data-category') === category) {
+                            item.classList.remove('hidden');
+                        } else {
+                            item.classList.add('hidden');
+                        }
+                    });
                 });
             });
-        });
+        }
     </script>
 
 </body>
