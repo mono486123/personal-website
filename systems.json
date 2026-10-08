@@ -1,26 +1,5 @@
 [
   {
-    "id": 3,
-    "badge": "new C++",
-    "title": "吳吳",
-    "description": "吳VGVRR",
-    "tags": [
-      "C",
-      "E",
-      "CPYTHON"
-    ],
-    "links": [
-      {
-        "name": "💻 GitHub 專案庫",
-        "url": "https://www.linkedin.com/feed/update/urn:li:activity:7508740544542576640/"
-      },
-      {
-        "name": "📹 實作展示 / 貼文",
-        "url": "https://www.linkedin.com/feed/update/urn:li:activity:7508740544542576640/"
-      }
-    ]
-  },
-  {
     "id": 1,
     "badge": "C++17 / OpenCV",
     "title": "DMS 駕駛監控系統 (Driver Monitoring System)",
