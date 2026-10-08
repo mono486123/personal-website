@@ -1,0 +1,142 @@
+:root {
+    --bg-dark: #121214;
+    --bg-card: #1a1a1e;
+    --border-color: #2c2c32;
+    --text-main: #e6e6e8;
+    --text-muted: #8e8e93;
+    --accent-beige: #d8c8b8;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.6;
+    padding: 40px 20px;
+}
+
+.container { max-width: 800px; margin: 0 auto; }
+
+/* 視覺門面 Hero 區域 */
+/* 視覺門面 Hero 區域 */
+.hero-section { 
+    margin-bottom: 40px; 
+    position: relative;
+}
+
+.banner-box {
+    width: 100%;
+    height: 180px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    background-color: #1a1a1e;
+    position: relative;
+    z-index: 1; /* 封面層級 1 */
+}
+
+.banner-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* 個人頭像與名稱區塊 */
+.profile-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 0 16px;
+    margin-bottom: 24px;
+    position: relative;
+    z-index: 5; /* 區塊層級高於封面 */
+}
+
+.avatar-box {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    border: 3px solid var(--bg-dark);
+    overflow: hidden;
+    background: var(--bg-card);
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    margin-top: -45px; /* 單獨向上壓在封面上 */
+    position: relative;
+    z-index: 10;       /* 關鍵：層級設為 10，確保永遠浮在封面上方 */
+}
+
+.avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.profile-text { 
+    padding-top: 12px; /* 文字順暢留在封面下方 */
+}
+
+.title { font-size: 1.8rem; font-weight: 700; line-height: 1.2; }
+.title span { color: var(--accent-beige); font-weight: 400; font-size: 1rem; }
+.tagline { color: var(--text-muted); margin-top: 8px; font-size: 0.9rem; }
+
+/* 宣言卡片 */
+.manifesto {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-left: 4px solid var(--accent-beige);
+    padding: 16px 20px;
+    border-radius: 4px;
+}
+.manifesto-quote { color: var(--accent-beige); font-weight: bold; }
+.manifesto-text { font-size: 0.9rem; margin-top: 4px; opacity: 0.9; }
+
+/* 入口 Portal (大字極簡風格) */
+.section-title {
+    font-size: 1rem;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+    letter-spacing: 0.05em;
+}
+
+.portal-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+}
+
+.portal-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 24px 20px;
+    text-decoration: none;
+    color: var(--text-main);
+    transition: transform 0.2s, border-color 0.2s;
+    display: block;
+}
+
+.portal-card:hover {
+    border-color: var(--accent-beige);
+    transform: translateY(-3px);
+}
+
+.portal-num { color: var(--accent-beige); font-weight: bold; font-size: 0.85rem; }
+.portal-title { font-size: 1.25rem; margin-top: 8px; font-weight: 600; }
+
+/* 手機版排版自動縮放 */
+@media (max-width: 600px) {
+    .banner-box { height: 130px; }
+    .profile-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+        margin-top: -35px;
+    }
+    .avatar-box { width: 75px; height: 75px; }
+    .title { font-size: 1.5rem; }
+}
