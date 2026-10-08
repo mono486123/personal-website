@@ -1,7 +1,9 @@
 import json
 import os
+import re
 import subprocess
 import sys
+from datetime import datetime
 import tkinter as tk
 from tkinter import messagebox, ttk
 
@@ -18,7 +20,7 @@ class UniversalGardenManager:
     def __init__(self, root):
         self.root = root
         self.root.title("🌸 個人數位花園 - 萬能發布管理系統")
-        self.root.geometry("680x760")
+        self.root.geometry("680x780")
         self.root.resizable(False, False)
 
         self.style = ttk.Style()
@@ -47,7 +49,7 @@ class UniversalGardenManager:
         # 底部 Git 設定
         self.setup_bottom_settings()
 
-        # 初始化兩頁
+        # 初始化頁面
         self.setup_add_tab()
         self.setup_manage_tab()
 
@@ -99,7 +101,6 @@ class UniversalGardenManager:
 
     def on_category_change(self, event=None):
         cat = self.cat_var.get()
-        # 清空並重建新增欄位
         for widget in self.form_frame.winfo_children():
             widget.destroy()
 
@@ -119,18 +120,28 @@ class UniversalGardenManager:
         self.form_frame = ttk.LabelFrame(self.tab_add, text="卡片詳細內容", padding=15)
         self.form_frame.pack(fill='both', expand=True, padx=10, pady=10)
 
+    # ---------------- 01 / 技術實作 ----------------
     def build_systems_form(self):
         f = self.form_frame
+
+        # 抓取過往 systems.json 內的 Badge 作為選單歷史記憶
+        existing_data = self.load_data()
+        history_badges = list(dict.fromkeys([item.get('badge') for item in existing_data if item.get('badge')]))
+        default_badges = ["C++17 / OpenCV", "Python / Edge AI", "DevOps / Optimization", "Python / Web"]
+        badge_options = list(dict.fromkeys(default_badges + history_badges))
+
         ttk.Label(f, text="1. 專案名稱:").grid(row=0, column=0, sticky='w', pady=2)
         self.e_sys_title = ttk.Entry(f, width=55); self.e_sys_title.grid(row=1, column=0, pady=(0, 8))
 
-        ttk.Label(f, text="2. Badge 分類 (例: C++17 / OpenCV):").grid(row=2, column=0, sticky='w', pady=2)
-        self.e_sys_badge = ttk.Entry(f, width=55); self.e_sys_badge.grid(row=3, column=0, pady=(0, 8))
+        ttk.Label(f, text="2. Badge 分類 (可選擇歷史選單或自行輸入):").grid(row=2, column=0, sticky='w', pady=2)
+        self.combo_sys_badge = ttk.Combobox(f, width=52, values=badge_options)
+        self.combo_sys_badge.grid(row=3, column=0, pady=(0, 8))
+        if badge_options: self.combo_sys_badge.set(badge_options[0])
 
         ttk.Label(f, text="3. 專案說明:").grid(row=4, column=0, sticky='w', pady=2)
         self.t_sys_desc = tk.Text(f, width=55, height=4, font=('Segoe UI', 9)); self.t_sys_desc.grid(row=5, column=0, pady=(0, 8))
 
-        ttk.Label(f, text="4. Tags (半形逗點隔開):").grid(row=6, column=0, sticky='w', pady=2)
+        ttk.Label(f, text="4. Tags (支援全形/半形逗點、頓號、句號自動防呆切割):").grid(row=6, column=0, sticky='w', pady=2)
         self.e_sys_tags = ttk.Entry(f, width=55); self.e_sys_tags.grid(row=7, column=0, pady=(0, 8))
 
         ttk.Label(f, text="5. GitHub 網址 (選填):").grid(row=8, column=0, sticky='w', pady=2)
@@ -142,11 +153,15 @@ class UniversalGardenManager:
         ttk.Button(f, text="🚀 發布至 01/技術實作", command=self.save_system).grid(row=12, column=0, ipady=4, sticky='we')
 
     def save_system(self):
-        title, badge = self.e_sys_title.get().strip(), self.e_sys_badge.get().strip()
+        title = self.e_sys_title.get().strip()
+        badge = self.combo_sys_badge.get().strip()
         desc = self.t_sys_desc.get("1.0", tk.END).strip()
         if not title or not badge or not desc: return messagebox.showwarning("提示", "請填寫完整資訊！")
 
-        tags = [t.strip() for t in self.e_sys_tags.get().split(',') if t.strip()]
+        # 使用正則表達式自動相容 , ， 、 。 ； ; 拆分標籤
+        raw_tags = self.e_sys_tags.get()
+        tags = [t.strip() for t in re.split(r'[,，、。；;\s]+', raw_tags) if t.strip()]
+
         links = []
         if self.e_sys_github.get().strip(): links.append({"name": "💻 GitHub 專案庫", "url": self.e_sys_github.get().strip()})
         if self.e_sys_post.get().strip(): links.append({"name": "📹 實作展示 / 貼文", "url": self.e_sys_post.get().strip()})
@@ -156,6 +171,7 @@ class UniversalGardenManager:
         self.save_data(data); self.refresh_treeview()
         if self.var_auto_push.get(): self.run_git_sync(f"feat: 新增技術專案 {title}")
 
+    # ---------------- 02 / 末日小說 ----------------
     def build_novels_form(self):
         f = self.form_frame
         ttk.Label(f, text="1. 小說書名/篇名:").grid(row=0, column=0, sticky='w', pady=2)
@@ -196,30 +212,61 @@ class UniversalGardenManager:
         self.save_data(data); self.refresh_treeview()
         if self.var_auto_push.get(): self.run_git_sync(f"feat: 新增小說作品 {title}")
 
+    # ---------------- 03 / 生活與節奏 ----------------
     def build_micro_logs_form(self):
         f = self.form_frame
-        ttk.Label(f, text="1. 發表年月 (例: 2026/08):").grid(row=0, column=0, sticky='w', pady=2)
-        self.e_log_date = ttk.Entry(f, width=55); self.e_log_date.grid(row=1, column=0, pady=(0, 8))
 
-        ttk.Label(f, text="2. 分類標籤 (選擇一個: 台11線 / 吉他 / UCC咖啡 / 動漫觀點):").grid(row=2, column=0, sticky='w', pady=2)
-        self.e_log_cat = ttk.Entry(f, width=55); self.e_log_cat.grid(row=3, column=0, pady=(0, 8))
+        now = datetime.now()
+        current_year = str(now.year)
+        current_month = f"{now.month:02d}"
+
+        years = [str(y) for y in range(2024, 2031)]
+        months = [f"{m:02d}" for m in range(1, 13)]
+
+        ttk.Label(f, text="1. 發表年月 (下拉選單點選):").grid(row=0, column=0, sticky='w', pady=2)
+        date_frame = ttk.Frame(f)
+        date_frame.grid(row=1, column=0, sticky='w', pady=(0, 8))
+
+        self.combo_log_year = ttk.Combobox(date_frame, values=years, state='readonly', width=10)
+        self.combo_log_year.set(current_year if current_year in years else "2026")
+        self.combo_log_year.pack(side='left', padx=(0, 5))
+
+        ttk.Label(date_frame, text="年").pack(side='left', padx=(0, 10))
+
+        self.combo_log_month = ttk.Combobox(date_frame, values=months, state='readonly', width=8)
+        self.combo_log_month.set(current_month)
+        self.combo_log_month.pack(side='left', padx=(0, 5))
+
+        ttk.Label(date_frame, text="月").pack(side='left')
+
+        ttk.Label(f, text="2. 分類標籤:").grid(row=2, column=0, sticky='w', pady=2)
+        categories = ["生活", "突發奇想", "興趣", "有感而發"]
+        self.combo_log_cat = ttk.Combobox(f, values=categories, state='readonly', width=52)
+        self.combo_log_cat.set("生活")
+        self.combo_log_cat.grid(row=3, column=0, pady=(0, 8))
 
         ttk.Label(f, text="3. 動態標題:").grid(row=4, column=0, sticky='w', pady=2)
         self.e_log_title = ttk.Entry(f, width=55); self.e_log_title.grid(row=5, column=0, pady=(0, 8))
 
         ttk.Label(f, text="4. 內文隨筆內容:").grid(row=6, column=0, sticky='w', pady=2)
-        self.t_log_desc = tk.Text(f, width=55, height=8, font=('Segoe UI', 9)); self.t_log_desc.grid(row=7, column=0, pady=(0, 12))
+        self.t_log_desc = tk.Text(f, width=55, height=7, font=('Segoe UI', 9)); self.t_log_desc.grid(row=7, column=0, pady=(0, 12))
 
         ttk.Button(f, text="🚀 發布至 03/生活與節奏", command=self.save_micro_log).grid(row=8, column=0, ipady=4, sticky='we')
 
     def save_micro_log(self):
-        date, cat = self.e_log_date.get().strip(), self.e_log_cat.get().strip()
+        year = self.combo_log_year.get()
+        month = self.combo_log_month.get()
+        date_str = f"{year}/{month}"
+
+        cat = self.combo_log_cat.get().strip()
         title = self.e_log_title.get().strip()
         desc = self.t_log_desc.get("1.0", tk.END).strip()
-        if not date or not cat or not title or not desc: return messagebox.showwarning("提示", "請完整填寫生活紀錄欄位！")
+
+        if not cat or not title or not desc:
+            return messagebox.showwarning("提示", "請完整填寫標題與隨筆內容！")
 
         data = self.load_data()
-        data.insert(0, {"id": len(data)+1, "date": date, "category": cat, "title": title, "desc": desc})
+        data.insert(0, {"id": len(data)+1, "date": date_str, "category": cat, "title": title, "desc": desc})
         self.save_data(data); self.refresh_treeview()
         if self.var_auto_push.get(): self.run_git_sync(f"feat: 新增生活隨筆 {title}")
 

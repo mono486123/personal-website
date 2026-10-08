@@ -109,10 +109,10 @@
 
         <div class="filter-bar" id="filter-bar">
             <button class="tag-btn active" data-filter="all">#全選</button>
-            <button class="tag-btn" data-filter="台11線">#台11線</button>
-            <button class="tag-btn" data-filter="吉他">#吉他</button>
-            <button class="tag-btn" data-filter="UCC咖啡">#UCC咖啡</button>
-            <button class="tag-btn" data-filter="動漫觀點">#動漫觀點</button>
+            <button class="tag-btn" data-filter="生活">#生活</button>
+            <button class="tag-btn" data-filter="突發奇想">#突發奇想</button>
+            <button class="tag-btn" data-filter="興趣">#興趣</button>
+            <button class="tag-btn" data-filter="有感而發">#有感而發</button>
         </div>
 
         <div id="timeline-container" class="timeline-list">
@@ -140,7 +140,6 @@
                     container.innerHTML += itemHtml;
                 });
 
-                // 註冊篩選按鈕事件
                 initFilter();
             })
             .catch(err => {
