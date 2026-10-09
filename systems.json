@@ -1,5 +1,27 @@
 [
   {
+    "id": 3,
+    "badge": "Python / Edge AI",
+    "title": "智慧零售 POS 自動結帳與庫存管理系統",
+    "description": "整合 YOLOv11 物件偵測模型與 Flutter 跨平台前端的智慧零售解法。以 SQLite 作為本地快取，即時同步數據至 Firebase，後台搭配 Streamlit 數據分析看板。",
+    "tags": [
+      "Python",
+      "YOLOv11",
+      "Flutter",
+      "Firebase"
+    ],
+    "links": [
+      {
+        "name": "💻 GitHub 專案庫",
+        "url": "https://github.com/mono486123/Product_recognition"
+      },
+      {
+        "name": "📹 實作展示 / 貼文",
+        "url": "https://lnkd.in/p/guSbV5HS"
+      }
+    ]
+  },
+  {
     "id": 1,
     "badge": "C++17 / OpenCV",
     "title": "DMS 駕駛監控系統 (Driver Monitoring System)",
