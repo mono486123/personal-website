@@ -1,6 +1,28 @@
 [
   {
     "id": 3,
+    "badge": "C++17 / OpenCV",
+    "title": "DMS 駕駛監控系統 (Driver Monitoring System)",
+    "description": "基於 C++17 與 OpenCV、MediaPipe Face Landmarker 打造的高效率駕駛狀態偵測管線。即時計算眼睛長寬比 (EAR) 進行疲勞觸發判斷，並整合原生 Windows 11 Toast 通知機制。",
+    "tags": [
+      "C++",
+      "OpenCVMediaPipe",
+      "MediaPipe",
+      "EAR疲勞偵測"
+    ],
+    "links": [
+      {
+        "name": "💻 GitHub 專案庫",
+        "url": "https://github.com/mono486123/DMS-Realtime-Cpp"
+      },
+      {
+        "name": "📹 實作展示 / 貼文",
+        "url": "https://lnkd.in/p/gSgSyMx9"
+      }
+    ]
+  },
+  {
+    "id": 3,
     "badge": "Python / Edge AI",
     "title": "智慧零售 POS 自動結帳與庫存管理系統",
     "description": "整合 YOLOv11 物件偵測模型與 Flutter 跨平台前端的智慧零售解法。以 SQLite 作為本地快取，即時同步數據至 Firebase，後台搭配 Streamlit 數據分析看板。",
